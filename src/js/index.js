@@ -9,7 +9,7 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
-let shotsLeft = 2; // Número máximo de tiros
+let shotsLeft = 5; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
 
@@ -152,6 +152,13 @@ function checkGameOver() {
         won = true; // El jugador gana si no quedan cerdos
     }
 }
+
+function checkBirdStillMoving() {
+    const speedThreshold = 0.1; // Un valor pequeño que indica que el pájaro ha parado
+    const velocity = bird.velocity;
+    const speed = Math.sqrt(velocity.x ** 2 + velocity.y ** 2);
+    return speed > speedThreshold;
+}
 function mouseReleased() {
     if (slingshot.bodyB) {
         launchBird();
@@ -286,16 +293,22 @@ function draw() {
     // Muestra los tiros restantes
     drawRemainingShots();
 
-    // Verifica si el juego ha terminado
-    checkGameOver();
+    // Verifica si el juego ha terminado, pero solo si el pájaro ya ha parado de moverse
+    if (!checkBirdStillMoving()) {
+        checkGameOver();
+    }
 
     // Muestra el mensaje de GAME OVER o YOU WIN
     if (gameOver) {
         drawGameOver();
     } else if (won) {
+        push();
         fill(0, 255, 0);
-        textSize(48);
+        stroke(37,17,12);
+        strokeWeight(3);
+        textSize(67);
         textAlign(CENTER, CENTER);
         text("YOU WIN!", width / 2, height / 2);
+        pop();
     }
 }
