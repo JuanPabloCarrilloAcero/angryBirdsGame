@@ -64,6 +64,11 @@ function createPig(x, y, r) {
 }
 
 function resetBird() {
+    // Si ya hay un pájaro en el mundo, eliminamos su cuerpo y lo removemos de las listas.
+    if (bird) {
+        World.remove(world, bird);  // Elimina el cuerpo del pájaro del mundo
+        bird = null;  // Limpia la referencia del pájaro
+    }
     bird = createCircle(150, 400, 20, { restitution: 0.6 });
     slingshot = Constraint.create({
         pointA: { x: 150, y: 450 },
@@ -72,6 +77,7 @@ function resetBird() {
         length: 0,
     });
     World.add(world, [bird, slingshot]);
+
     resettingBird = true; // Activa el indicador para mover la cámara al inicio.
     birdLaunched = false; // Restablece el indicador de lanzamiento.
 }
@@ -148,6 +154,7 @@ function removeObjectsHitByBird() {
         return distance <= (bodyA.circleRadius || bodyA.width / 2) + (bodyB.circleRadius || bodyB.width / 2);
     };
 
+    
     pigs = pigs.filter(pig => {
         if (checkCollision(bird, pig)) {
             World.remove(world, pig);
@@ -163,6 +170,7 @@ function removeObjectsHitByBird() {
         }
         return true;
     });
+    
 }
 
 function drawGround() {
@@ -198,7 +206,6 @@ function drawBlocks() {
         push();
         translate(block.position.x, block.position.y);
         rotate(block.angle);
-        //rect(0, 0, block.width, block.height);
         image(boxImg, 0, 0, block.width, block.height);
         pop();
     });
