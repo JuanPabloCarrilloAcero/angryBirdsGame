@@ -9,6 +9,9 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
+let shotsLeft = 5; // Número máximo de tiros
+let gameOver = false; // Estado de si el juego ha terminado
+let won = false;
 
 
 function preload() {
@@ -17,7 +20,6 @@ function preload() {
     boxImg = loadImage('assets/box.png');
     pigTexture = loadImage('assets/Sp.png');
     fondo = loadImage('assets/fondo.jpg');
-
 }
 
 function setup() {
@@ -83,6 +85,7 @@ function resetBird() {
 }
 
 function launchBird() {
+    if (gameOver || !slingshot.bodyB) return; // No permite lanzar el pájaro si el juego ha terminado
     if (!slingshot.bodyB) return;
 
     setTimeout(() => {
@@ -111,7 +114,8 @@ function launchBird() {
                 y: currentVelocity.y * scale,
             });
         }
-
+        shotsLeft--;
+        
         setTimeout(() => {
             if (!slingshot.bodyB) {
                 resetBird();
@@ -120,6 +124,31 @@ function launchBird() {
     }, 100);
 }
 
+function drawGameOver() {
+    if (gameOver) {
+        fill(255, 0, 0);
+        textSize(48);
+        textAlign(CENTER, CENTER);
+        text("GAME OVER", width / 2, height / 2);
+    }
+}
+
+function drawRemainingShots() {
+    fill(255);
+    textSize(24);
+    textAlign(LEFT, TOP);
+    text("Tiros restantes: " + shotsLeft, 20, 20);
+}
+
+function checkGameOver() {
+    if (shotsLeft <= 0 && pigs.length > 0) {
+        gameOver = true;
+    }
+
+    if (pigs.length === 0) {
+        won = true; // El jugador gana si no quedan cerdos
+    }
+}
 function mouseReleased() {
     if (slingshot.bodyB) {
         launchBird();
@@ -250,4 +279,20 @@ function draw() {
     drawBlocks();
 
     pop(); // Restaura el estado original de la transformación
+
+    // Muestra los tiros restantes
+    drawRemainingShots();
+
+    // Verifica si el juego ha terminado
+    checkGameOver();
+
+    // Muestra el mensaje de GAME OVER o YOU WIN
+    if (gameOver) {
+        drawGameOver();
+    } else if (won) {
+        fill(0, 255, 0);
+        textSize(48);
+        textAlign(CENTER, CENTER);
+        text("YOU WIN!", width / 2, height / 2);
+    }
 }
