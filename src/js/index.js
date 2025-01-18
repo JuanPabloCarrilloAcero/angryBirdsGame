@@ -14,7 +14,10 @@ let resettingBird = false; // Indicador para saber si la cámara debe volver al 
 function preload() {
     slingshotTexture = loadImage('assets/Slingshot_Classic.png'); // Adjusted path for local assets
     birdTexture = loadImage('assets/RedBird.png');
+    
     pigTexture = loadImage('assets/Sp.png');
+    fondo = loadImage('assets/fondo.jpg');
+
 }
 
 function setup() {
@@ -195,8 +198,7 @@ function drawBlocks() {
 }
 
 function draw() {
-    background(200);
-
+    background(fondo);
     Engine.update(engine);
 
     if (slingshot.bodyB) {
@@ -204,7 +206,6 @@ function draw() {
     }
 
     removeObjectsHitByBird();
-
     // Actualiza la posición y escala de la cámara.
     if (birdLaunched) {
         const targetCameraX = bird.position.x - width / 2;
@@ -219,17 +220,20 @@ function draw() {
             resettingBird = false; // Detiene el movimiento cuando la cámara está en su posición original.
         }
     }
-
-    // Limita la cámara para que no muestre zonas fuera del mundo visible.
+   // Limita la cámara para que no muestre zonas fuera del mundo visible
     cameraX = constrain(cameraX, 0, max(0, width * 2 - width));
 
-    // Cambia el sistema de coordenadas para reflejar la posición y escala de la cámara.
-    translate(-cameraX, 0);
-    scale(cameraScale);
+    // Cambia el sistema de coordenadas para reflejar la posición y escala de la cámara
+    push(); // Guarda el estado actual de la transformación
+    translate(-cameraX, 0);  // Mueve la cámara
+    scale(cameraScale);  // Aplica el zoom de la cámara
 
+    // Dibuja los objetos después de la transformación
     drawGround();
     drawSlingshot();
     drawBird();
     drawPigs();
     drawBlocks();
+
+    pop(); // Restaura el estado original de la transformación
 }
