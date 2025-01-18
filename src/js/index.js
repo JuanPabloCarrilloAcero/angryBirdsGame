@@ -14,7 +14,7 @@ let resettingBird = false; // Indicador para saber si la cámara debe volver al 
 function preload() {
     slingshotTexture = loadImage('assets/Slingshot_Classic.png'); // Adjusted path for local assets
     birdTexture = loadImage('assets/RedBird.png');
-    
+    boxImg = loadImage('assets/box.png');
     pigTexture = loadImage('assets/Sp.png');
     fondo = loadImage('assets/fondo.jpg');
 
@@ -198,7 +198,8 @@ function drawBlocks() {
         push();
         translate(block.position.x, block.position.y);
         rotate(block.angle);
-        rect(0, 0, block.width, block.height);
+        //rect(0, 0, block.width, block.height);
+        image(boxImg, 0, 0, block.width, block.height);
         pop();
     });
 }
