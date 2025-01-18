@@ -9,9 +9,10 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
-let shotsLeft = 5; // Número máximo de tiros
+let shotsLeft = 2; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
+
 
 
 function preload() {
@@ -79,13 +80,15 @@ function resetBird() {
         length: 0,
     });
     World.add(world, [bird, slingshot]);
+    birdLaunched = false;
+
 
     resettingBird = true; // Activa el indicador para mover la cámara al inicio.
     birdLaunched = false; // Restablece el indicador de lanzamiento.
 }
 
 function launchBird() {
-    if (gameOver || !slingshot.bodyB) return; // No permite lanzar el pájaro si el juego ha terminado
+    if (gameOver || !slingshot.bodyB || shotsLeft <= 0) return; // No permite lanzar el pájaro si el juego ha terminado
     if (!slingshot.bodyB) return;
 
     setTimeout(() => {
@@ -120,7 +123,7 @@ function launchBird() {
             if (!slingshot.bodyB) {
                 resetBird();
             }
-        }, 2000); // Delay before resetting the bird
+        }, 1700); // Delay before resetting the bird
     }, 100);
 }
 
@@ -134,7 +137,7 @@ function drawGameOver() {
 }
 
 function drawRemainingShots() {
-    fill(255);
+    fill(0);
     textSize(24);
     textAlign(LEFT, TOP);
     text("Tiros restantes: " + shotsLeft, 20, 20);
