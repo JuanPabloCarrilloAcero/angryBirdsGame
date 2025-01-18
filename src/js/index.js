@@ -77,13 +77,18 @@ function resetBird() {
 }
 
 function launchBird() {
+    if (!slingshot.bodyB) return;
+
     setTimeout(() => {
+        //Soltar pajaro
         slingshot.bodyB = null;
         birdLaunched = true; // Marca el pájaro como lanzado.
 
+        //Fuerza lanzamiento
         const forceMagnitude = 0.0035;
         const deltaX = bird.position.x - slingshot.pointA.x;
         const deltaY = bird.position.y - slingshot.pointA.y;
+        //Fuerza x direccion
         Body.applyForce(bird, bird.position, {
             x: deltaX * forceMagnitude,
             y: deltaY * forceMagnitude,
