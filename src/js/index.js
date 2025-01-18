@@ -168,7 +168,7 @@ function drawGround() {
 
 function drawSlingshot() {
     if (slingshot.bodyB) {
-        image(slingshotTexture, slingshot.pointA.x, slingshot.pointA.y + 50, 80, 160);
+        image(slingshotTexture, slingshot.pointA.x-40, slingshot.pointA.y -29, 80, 160);
         stroke(0);
         line(slingshot.pointA.x, slingshot.pointA.y, slingshot.bodyB.position.x, slingshot.bodyB.position.y);
     }
