@@ -9,7 +9,7 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
-let shotsLeft = 5; // Número máximo de tiros
+let shotsLeft = 2; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
 let backgroundMusic;
@@ -17,6 +17,7 @@ let shotSound;
 let winSound;
 let impactPigSound;
 let hasPlayedWinSound = false;
+let hasPlayedLoseSound = false;
 
 
 
@@ -26,6 +27,8 @@ function preload() {
     shotSound = loadSound('assets/shot.mp3');
     hitPigSound = loadSound('assets/hitPig.mp3');
     winSound = loadSound('assets/winGame.mp3');
+    hitBoxSound = loadSound('assets/hitBox.mp3');
+    gameOverSound = loadSound('assets/gameOver.mp3');
 
     slingshotTexture = loadImage('assets/Slingshot_Classic.png'); // Adjusted path for local assets
     birdTexture = loadImage('assets/RedBird.png');
@@ -148,7 +151,9 @@ function launchBird() {
 function drawGameOver() {
     if (gameOver) {
         fill(255, 0, 0);
-        textSize(48);
+        stroke(37,17,12);
+        strokeWeight(3);
+        textSize(67);
         textAlign(CENTER, CENTER);
         text("GAME OVER", width / 2, height / 2);
     }
@@ -223,6 +228,7 @@ function removeObjectsHitByBird() {
 
     blocks = blocks.filter(block => {
         if (checkCollision(bird, block)) {
+            hitBoxSound.play();
             World.remove(world, block);
             return false;
         }
@@ -320,6 +326,13 @@ function draw() {
     // Muestra el mensaje de GAME OVER o YOU WIN
     if (gameOver) {
         drawGameOver();
+        if(!hasPlayedLoseSound){
+            // Reproducir sonido de victoria solo una vez
+            gameOverSound.setVolume(0.5);
+            gameOverSound.play();
+            hasPlayedLoseSound = true; // Marcar que ya se reprodujo el sonido
+            backgroundMusic.pause()
+        }
     } else if (won) {
         push();
         fill(0, 255, 0);
