@@ -9,7 +9,7 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
-let shotsLeft = 2; // Número máximo de tiros
+let shotsLeft = 10; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
 let backgroundMusic;
@@ -60,15 +60,30 @@ function setup() {
 
     resetBird();
 
-    pigs.push(createPig(900, 520, 30));
-    
+    //Creación nivel
+    pigs.push(createPig(900, 550, 30));
+    pigs.push(createPig(600, 550, 30));
+    pigs.push(createPig(750, 550, 30));
+    //Bloques medianos: 70x35
 
-    blocks.push(createRect(650, 500, 20, 100, 'verticalWood'));
+    //Hielo parte izquierda
+    blocks.push(createRect(500, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(530, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(550, 550, 20, 140, 'verticalIce'));
+    blocks.push(createRect(515, 500, 70, 35, 'horizontalIce'));
+    blocks.push(createRect(530, 450, 35, 70, 'verticalIce'));
+    
+    //Parte central abajo
+
+    blocks.push(createRect(700, 550, 50, 50, 'squareWood'));
+    blocks.push(createRect(700, 550, 50, 50, 'squareIce'));
+    
+    /*blocks.push(createRect(650, 500, 20, 100, 'verticalWood'));
     blocks.push(createRect(650, 500, 100, 20, 'horizontalWood'));
     blocks.push(createRect(650, 500, 70, 70, 'squareIce'));    
     blocks.push(createRect(650, 500, 30, 100, 'verticalIce'));
     blocks.push(createRect(650, 500, 100, 30, 'horizontalIce'));
-    blocks.push(createRect(650, 500, 70, 70, 'squareStone'));    
+    blocks.push(createRect(650, 500, 70, 70, 'squareStone'));    */
     
     blocks.forEach(block => World.add(world, block));
 
@@ -100,7 +115,7 @@ function createRect(x, y, w, h, type, options = {}) {
     rect.width = w;
     rect.height = h;
     rect.texture = texture
-    
+    rect.health = 100;
     return rect;
 }
 
@@ -113,6 +128,7 @@ function createCircle(x, y, r, options = {}) {
 function createPig(x, y, r) {
     const pig = createCircle(x, y, r, { isStatic: false, restitution: 0.5 });
     World.add(world, pig);
+    pig.health = 20;
     return pig;
 }
 
@@ -122,7 +138,7 @@ function resetBird() {
         World.remove(world, bird);  // Elimina el cuerpo del pájaro del mundo
         bird = null;  // Limpia la referencia del pájaro
     }
-    bird = createCircle(150, 400, 20, { restitution: 0.6 });
+    bird = createCircle(150, 400, 20, { restitution: 0.4 });
     slingshot = Constraint.create({
         pointA: { x: 150, y: 450 },
         bodyB: bird,
@@ -238,33 +254,48 @@ function constrainBird() {
     }
 }
 
+
 function removeObjectsHitByBird() {
-    const checkCollision = (bodyA, bodyB) => {
-        const dx = bodyA.position.x - bodyB.position.x;
-        const dy = bodyA.position.y - bodyB.position.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance <= (bodyA.circleRadius || bodyA.width / 2) + (bodyB.circleRadius || bodyB.width / 2);
+    const checkCollision = (bodyA, bodyB, padding = 0) => {
+        const boundsA = bodyA.bounds;
+        const boundsB = bodyB.bounds;
+
+        return (
+            boundsA.min.x <= boundsB.max.x - padding &&
+            boundsA.max.x >= boundsB.min.x + padding &&
+            boundsA.min.y <= boundsB.max.y - padding &&
+            boundsA.max.y >= boundsB.min.y + padding
+        );
     };
 
-    
     pigs = pigs.filter(pig => {
-        if (checkCollision(bird, pig)) {
+        if (checkCollision(bird, pig, 0)) {
             hitPigSound.play();
+
+            // Desactiva temporalmente la restitución para evitar rebotes
+            const originalRestitution = bird.restitution;
+            bird.restitution = 0;
+
+            // Elimina el cerdo del mundo
             World.remove(world, pig);
+
+            // Restaura la restitución después de un breve periodo
+            
+            bird.restitution = originalRestitution;
+            
             return false;
         }
         return true;
     });
 
     blocks = blocks.filter(block => {
-        if (checkCollision(bird, block)) {
+        if (checkCollision(bird, block, 8)) {
             hitBoxSound.play();
             World.remove(world, block);
-            return false;
+            return false; // Bloque eliminado
         }
         return true;
     });
-    
 }
 
 function drawGround() {
