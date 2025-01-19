@@ -105,7 +105,7 @@ function resetBird() {
 }
 
 function launchBird() {
-    if (gameOver || !slingshot.bodyB || shotsLeft <= 0) return; // No permite lanzar el pájaro si el juego ha terminado
+    if (gameOver||won|| !slingshot.bodyB || shotsLeft <= 0) return; // No permite lanzar el pájaro si el juego ha terminado
     if (!slingshot.bodyB) return;
 
     shotSound.play();
