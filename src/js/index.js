@@ -19,6 +19,13 @@ function preload() {
     slingshotTexture = loadImage('assets/Slingshot_Classic.png'); // Adjusted path for local assets
     birdTexture = loadImage('assets/RedBird.png');
     boxImg = loadImage('assets/box.png');
+    squareWoodTexture = loadImage('assets/squareWood.png');
+    squareIceTexture = loadImage('assets/squareIce.png');
+    squareStoneTexture = loadImage('assets/squareStone.png');
+    verticalWoodTexture = loadImage('assets/verticalRectWood.png');
+    verticalIceTexture = loadImage('assets/verticalIce.png');
+    horizontalWoodTexture = loadImage('assets/horizontalRectWood.png');
+    horizontalIceTexture = loadImage('assets/horizontalIce.png');
     pigTexture = loadImage('assets/Sp.png');
     fondo = loadImage('assets/fondo.jpg');
 }
@@ -34,23 +41,46 @@ function setup() {
     const mouseConstraint = Matter.MouseConstraint.create(engine, { mouse });
     World.add(world, mouseConstraint);
 
-    ground = createRect(width / 2, height - 10, width, 20, { isStatic: true });
+    ground = createRect(width / 2, height - 10, width, 20, 'ground',{ isStatic: true });
     World.add(world, ground);
 
     resetBird();
 
-    pigs.push(createPig(600, 520, 30));
-    pigs.push(createPig(700, 520, 30));
+    pigs.push(createPig(900, 520, 30));
+    
 
-    blocks.push(createRect(650, 500, 60, 60));
-    blocks.push(createRect(650, 440, 60, 60));
+    blocks.push(createRect(650, 500, 20, 100, 'verticalWood'));
+    blocks.push(createRect(650, 500, 100, 20, 'horizontalWood'));
+    blocks.push(createRect(650, 500, 70, 70, 'squareIce'));    
+    blocks.push(createRect(650, 500, 30, 100, 'verticalIce'));
+    blocks.push(createRect(650, 500, 100, 30, 'horizontalIce'));
+    blocks.push(createRect(650, 500, 70, 70, 'squareStone'));    
+    
     blocks.forEach(block => World.add(world, block));
 }
 
-function createRect(x, y, w, h, options = {}) {
+function createRect(x, y, w, h, type, options = {}) {
+    let texture = boxImg;
+    if (type === 'squareWood') {
+        texture = squareWoodTexture;
+    } else if (type === 'verticalWood') {
+        texture = verticalWoodTexture;
+    } else if (type === 'horizontalWood') {
+        texture = horizontalWoodTexture
+    }else if (type === 'squareIce') {
+        texture = squareIceTexture;
+    }else if (type === 'horizontalIce') {
+        texture = horizontalIceTexture;
+    }else if (type === 'verticalIce') {
+        texture = verticalIceTexture;
+    }else if (type === 'squareStone') {
+        texture = squareStoneTexture;
+    }
     const rect = Bodies.rectangle(x, y, w, h, options);
     rect.width = w;
     rect.height = h;
+    rect.texture = texture
+    
     return rect;
 }
 
@@ -245,7 +275,7 @@ function drawBlocks() {
         push();
         translate(block.position.x, block.position.y);
         rotate(block.angle);
-        image(boxImg, 0, 0, block.width, block.height);
+        image(block.texture, 0, 0, block.width, block.height);
         pop();
     });
 }
