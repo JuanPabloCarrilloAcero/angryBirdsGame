@@ -12,10 +12,21 @@ let resettingBird = false; // Indicador para saber si la cámara debe volver al 
 let shotsLeft = 5; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
+let backgroundMusic;
+let shotSound;
+let winSound;
+let impactPigSound;
+let hasPlayedWinSound = false;
 
 
 
 function preload() {
+    // Cargar la música de fondo y los efectos de sonido
+    backgroundMusic = loadSound('assets/background.mp3');
+    shotSound = loadSound('assets/shot.mp3');
+    hitPigSound = loadSound('assets/hitPig.mp3');
+    winSound = loadSound('assets/winGame.mp3');
+
     slingshotTexture = loadImage('assets/Slingshot_Classic.png'); // Adjusted path for local assets
     birdTexture = loadImage('assets/RedBird.png');
     boxImg = loadImage('assets/box.png');
@@ -28,7 +39,7 @@ function setup() {
 
     engine = Engine.create();
     world = engine.world;
-
+    
     const mouse = Matter.Mouse.create(canvas.elt);
     mouse.pixelRatio = pixelDensity();
     const mouseConstraint = Matter.MouseConstraint.create(engine, { mouse });
@@ -45,6 +56,12 @@ function setup() {
     blocks.push(createRect(650, 500, 60, 60));
     blocks.push(createRect(650, 440, 60, 60));
     blocks.forEach(block => World.add(world, block));
+
+    // Reproducir la música de fondo en bucle
+    backgroundMusic.setVolume(0.1);
+    backgroundMusic.loop(); // Reproducir música de fondo en bucle
+    
+
 }
 
 function createRect(x, y, w, h, options = {}) {
@@ -91,6 +108,7 @@ function launchBird() {
     if (gameOver || !slingshot.bodyB || shotsLeft <= 0) return; // No permite lanzar el pájaro si el juego ha terminado
     if (!slingshot.bodyB) return;
 
+    shotSound.play();
     setTimeout(() => {
         //Soltar pajaro
         slingshot.bodyB = null;
@@ -196,6 +214,7 @@ function removeObjectsHitByBird() {
     
     pigs = pigs.filter(pig => {
         if (checkCollision(bird, pig)) {
+            hitPigSound.play();
             World.remove(world, pig);
             return false;
         }
@@ -253,7 +272,7 @@ function drawBlocks() {
 function draw() {
     background(fondo);
     Engine.update(engine);
-
+    
     if (slingshot.bodyB) {
         constrainBird();
     }
@@ -309,6 +328,14 @@ function draw() {
         textSize(67);
         textAlign(CENTER, CENTER);
         text("YOU WIN!", width / 2, height / 2);
+        if(!hasPlayedWinSound){
+            // Reproducir sonido de victoria solo una vez
+        winSound.setVolume(0.5);
+        winSound.play();
+        hasPlayedWinSound = true; // Marcar que ya se reprodujo el sonido
+        backgroundMusic.pause()
+        }
         pop();
+        
     }
 }
