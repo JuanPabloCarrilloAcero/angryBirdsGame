@@ -9,7 +9,7 @@ let cameraX = 0; // La posición inicial de la cámara en el eje X.
 let cameraScale = 1; // Escala de la cámara.
 const CAMERA_PADDING = 300; // Espacio que se muestra más allá del pájaro.
 let resettingBird = false; // Indicador para saber si la cámara debe volver al inicio.
-let shotsLeft = 10; // Número máximo de tiros
+let shotsLeft = 8; // Número máximo de tiros
 let gameOver = false; // Estado de si el juego ha terminado
 let won = false;
 let backgroundMusic;
@@ -61,23 +61,106 @@ function setup() {
     resetBird();
 
     //Creación nivel
-    pigs.push(createPig(900, 550, 30));
     pigs.push(createPig(600, 550, 30));
-    pigs.push(createPig(750, 550, 30));
+    pigs.push(createPig(800, 550, 30));
+    pigs.push(createPig(1000, 550, 30));
+    
     //Bloques medianos: 70x35
-
-    //Hielo parte izquierda
-    blocks.push(createRect(500, 550, 35, 70, 'verticalIce'));
-    blocks.push(createRect(530, 550, 35, 70, 'verticalIce'));
+    //Bloques largos 20x140
+    const padding = 400;
+    //Hielo izquierda
+    blocks.push(createRect(480, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(510, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(495, 495, 70, 35, 'horizontalIce'));    
+    blocks.push(createRect(510, 440, 35, 70, 'verticalIce'));
+    
+    //Torre izquierda
     blocks.push(createRect(550, 550, 20, 140, 'verticalIce'));
-    blocks.push(createRect(515, 500, 70, 35, 'horizontalIce'));
-    blocks.push(createRect(530, 450, 35, 70, 'verticalIce'));
-    
-    //Parte central abajo
+    blocks.push(createRect(650, 550, 20, 140, 'verticalWood'));
+    blocks.push(createRect(600, 430, 140, 20, 'horizontalWood'));
+    blocks.push(createRect(600, 410, 140, 20, 'horizontalWood'));
 
-    blocks.push(createRect(700, 550, 50, 50, 'squareWood'));
-    blocks.push(createRect(700, 550, 50, 50, 'squareIce'));
+    blocks.push(createRect(580, 395, 35, 35, 'squareStone'));
+    blocks.push(createRect(615, 395, 35, 35, 'squareStone'));
+    blocks.push(createRect(597, 365, 35, 35, 'squareStone'));
+
+    blocks.push(createRect(550, 350, 20, 140, 'verticalIce'));
+    blocks.push(createRect(650, 350, 20, 140, 'verticalWood'));
+    blocks.push(createRect(600, 300, 140, 20, 'horizontalIce'));
+
+    blocks.push(createRect(550, 290, 35, 35, 'squareIce'));
+    blocks.push(createRect(600, 290, 35, 35, 'squareIce'));
+    blocks.push(createRect(650, 290, 35, 35, 'squareIce'));
     
+    //Parte central abajo madera
+    
+    blocks.push(createRect(710, 550, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(710, 530, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(710, 500, 40, 35, 'squareWood'));
+    
+    blocks.push(createRect(755, 550, 20, 90, 'verticalWood'));
+    blocks.push(createRect(840, 550, 20, 90, 'verticalWood'));
+    //blocks.push(createRect(750, 500, 40, 18, 'horizontalWood'));
+    //blocks.push(createRect(850, 500, 40, 18, 'horizontalWood'));
+    blocks.push(createRect(800, 490, 135, 17.5, 'horizontalWood'));
+
+    blocks.push(createRect(730, 470, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(870, 470, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(800, 460, 40, 36, 'verticalWood'));
+
+    blocks.push(createRect(765, 430, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(835, 430, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(715, 410, 35, 70, 'verticalIce'));
+    blocks.push(createRect(885, 410, 35, 70, 'verticalIce'));
+    blocks.push(createRect(750, 390, 35, 70, 'verticalIce'));
+    blocks.push(createRect(850, 390, 35, 70, 'verticalIce'));
+    blocks.push(createRect(800, 390, 35, 72, 'verticalWood'));
+
+    //Torre centro
+    blocks.push(createRect(800, 340, 140, 20, 'horizontalIce'));
+    blocks.push(createRect(745, 260, 20, 140, 'verticalIce'));
+    blocks.push(createRect(855, 260, 20, 140, 'verticalIce'));
+    blocks.push(createRect(800, 180, 140, 20, 'horizontalIce'));
+
+    blocks.push(createRect(750, 150, 35, 35, 'squareIce'));
+    blocks.push(createRect(800, 150, 35, 35, 'squareIce'));
+    blocks.push(createRect(850, 150, 35, 35, 'squareIce'));
+
+    blocks.push(createRect(800, 310, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(800, 260, 35, 70, 'verticalWood'));
+    blocks.push(createRect(800, 240, 35, 35, 'squareStone'));
+
+
+    blocks.push(createRect(885, 550, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(885, 530, 70, 35, 'horizontalWood'));
+    blocks.push(createRect(885, 500, 40, 35, 'squareWood'));
+
+    //Torre derecha
+    blocks.push(createRect(550+padding, 550, 20, 140, 'verticalWood'));
+    blocks.push(createRect(650+padding, 550, 20, 140, 'verticalIce'));
+    blocks.push(createRect(600+padding, 430, 140, 20, 'horizontalWood'));
+    blocks.push(createRect(600+padding, 410, 140, 20, 'horizontalWood'));
+
+    blocks.push(createRect(580+padding, 395, 35, 35, 'squareStone'));
+    blocks.push(createRect(615+padding, 395, 35, 35, 'squareStone'));
+    blocks.push(createRect(597+padding, 365, 35, 35, 'squareStone'));
+
+    blocks.push(createRect(550+padding, 350, 20, 140, 'verticalWood'));
+    blocks.push(createRect(650+padding, 350, 20, 140, 'verticalIce'));
+    blocks.push(createRect(600+padding, 300, 140, 20, 'horizontalIce'));
+
+    blocks.push(createRect(550+padding, 290, 35, 35, 'squareIce'));
+    blocks.push(createRect(600+padding, 290, 35, 35, 'squareIce'));
+    blocks.push(createRect(650+padding, 290, 35, 35, 'squareIce'));
+
+    //Parte hielo derecha
+    blocks.push(createRect(1085, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(510+605, 550, 35, 70, 'verticalIce'));
+    blocks.push(createRect(495+605, 495, 70, 35, 'horizontalIce'));    
+    blocks.push(createRect(485+605, 440, 35, 70, 'verticalIce'));
+    
+    
+
     /*blocks.push(createRect(650, 500, 20, 100, 'verticalWood'));
     blocks.push(createRect(650, 500, 100, 20, 'horizontalWood'));
     blocks.push(createRect(650, 500, 70, 70, 'squareIce'));    
@@ -94,7 +177,7 @@ function setup() {
 
 }
 
-function createRect(x, y, w, h, type, options = {}) {
+function createRect(x, y, w, h, type, options = {friction:1.0}) {
     let texture = boxImg;
     if (type === 'squareWood') {
         texture = squareWoodTexture;
@@ -289,7 +372,7 @@ function removeObjectsHitByBird() {
     });
 
     blocks = blocks.filter(block => {
-        if (checkCollision(bird, block, 8)) {
+        if (checkCollision(bird, block, 7)) {
             hitBoxSound.play();
             World.remove(world, block);
             return false; // Bloque eliminado
